@@ -24,7 +24,7 @@ Convert prompt-safe single-file agent skills into native prompt entries for Code
 ## Install from a source
 
 ```bash
-npx add-prompts add vercel-labs/agent-skills --skill think -a codex -a claude-code -a pi
+npx add-prompts add https://github.com/tw93/Waza --skill think -a codex -a claude-code -a pi
 ```
 
 Supported source formats:
@@ -75,19 +75,19 @@ add-prompts init [name]
 List convertible skills:
 
 ```bash
-npx add-prompts add ./skills --list
+npx add-prompts add https://github.com/tw93/Waza --list
 ```
 
-Install all prompt-safe skills to all supported agents:
+Install Waza's `think` workflow to Codex:
 
 ```bash
-npx add-prompts add ./skills --all
+npx add-prompts add https://github.com/tw93/Waza --skill think -a codex
 ```
 
 Preview writes before changing files:
 
 ```bash
-npx add-prompts add ./skills --skill think -a codex --dry-run
+npx add-prompts add https://github.com/tw93/Waza --skill think -a codex --dry-run
 ```
 
 Install output includes the generated prompt markdown length:
@@ -99,13 +99,13 @@ would-create think for Codex: ~/.codex/prompts/think.md (1,234 chars)
 Bundle a multi-file skill into one prompt:
 
 ```bash
-npx add-prompts add ./skills --skill think -a codex --bundle-extras
+npx add-prompts add https://github.com/mattpocock/skills/blob/main/skills/productivity/handoff/SKILL.md -a codex --bundle-extras
 ```
 
 Remove an installed prompt:
 
 ```bash
-npx add-prompts remove think -a codex
+npx add-prompts remove handoff -a codex
 ```
 
 ## Prompt-safe rule
