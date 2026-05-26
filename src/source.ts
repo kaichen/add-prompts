@@ -17,6 +17,10 @@ interface GitHubTreeSource {
   subpath: string;
 }
 
+export interface GitHubPathSource extends GitHubTreeSource {
+  kind: 'tree' | 'blob';
+}
+
 export function resolveSource(source: string): ResolvedSource {
   if (!source) {
     throw new Error('source is required');
@@ -30,9 +34,9 @@ export function resolveSource(source: string): ResolvedSource {
     return { path: localPath, label: localPath, cleanup: () => undefined };
   }
 
-  const tree = parseGitHubTreeUrl(source);
-  if (tree) {
-    return cloneGitHubTree(tree);
+  const githubPath = parseGitHubPathUrl(source, resolveBranch);
+  if (githubPath) {
+    return cloneGitHubPath(githubPath);
   }
 
   const repoUrl = normalizeGitSource(source);
@@ -69,7 +73,10 @@ function normalizeGitSource(source: string): string | null {
   return null;
 }
 
-function parseGitHubTreeUrl(source: string): GitHubTreeSource | null {
+export function parseGitHubPathUrl(
+  source: string,
+  resolveBranchName: (repoUrl: string, pathParts: string[]) => string = (repoUrl, pathParts) => pathParts[0] ?? 'main',
+): GitHubPathSource | null {
   let url: URL;
   try {
     url = new URL(source);
@@ -81,8 +88,8 @@ function parseGitHubTreeUrl(source: string): GitHubTreeSource | null {
   }
 
   const parts = url.pathname.replace(/^\/|\/$/g, '').split('/');
-  const treeIndex = parts.indexOf('tree');
-  if (parts.length < 5 || treeIndex !== 2) {
+  const pathKind = parts[2];
+  if (parts.length < 5 || (pathKind !== 'tree' && pathKind !== 'blob')) {
     return null;
   }
 
@@ -92,11 +99,19 @@ function parseGitHubTreeUrl(source: string): GitHubTreeSource | null {
   }
 
   const repoUrl = `https://github.com/${owner}/${repo.replace(/\.git$/, '')}.git`;
-  const afterTree = parts.slice(treeIndex + 1);
-  const branch = resolveBranch(repoUrl, afterTree);
-  const subpath = afterTree.slice(branch.split('/').length).join('/');
+  const afterKind = parts.slice(3);
+  const branch = resolveBranchName(repoUrl, afterKind);
+  const pathParts = afterKind.slice(branch.split('/').length);
+  const subpath = pathKind === 'blob' ? getBlobSkillDir(pathParts) : pathParts.join('/');
 
-  return { repoUrl, owner, repo, branch, subpath };
+  return { repoUrl, owner, repo, branch, subpath, kind: pathKind };
+}
+
+function getBlobSkillDir(pathParts: string[]): string {
+  if (pathParts.at(-1) !== 'SKILL.md') {
+    throw new Error('GitHub blob sources must point to a SKILL.md file');
+  }
+  return pathParts.slice(0, -1).join('/');
 }
 
 function resolveBranch(repoUrl: string, pathParts: string[]): string {
@@ -117,7 +132,7 @@ function resolveBranch(repoUrl: string, pathParts: string[]): string {
   return pathParts[0] ?? 'main';
 }
 
-function cloneGitHubTree(tree: GitHubTreeSource): ResolvedSource {
+function cloneGitHubPath(tree: GitHubTreeSource): ResolvedSource {
   const temp = mkdtempSync(join(tmpdir(), 'add-prompts-'));
   const repoDir = join(temp, `${tree.owner}-${tree.repo}`);
   execFileSync('git', ['clone', '--depth', '1', '--branch', tree.branch, tree.repoUrl, repoDir], { stdio: 'ignore' });

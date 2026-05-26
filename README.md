@@ -16,6 +16,7 @@ Supported source formats:
 npx add-prompts add owner/repo
 npx add-prompts add https://github.com/owner/repo
 npx add-prompts add https://github.com/owner/repo/tree/main/path/to/skill
+npx add-prompts add https://github.com/owner/repo/blob/main/path/to/skill/SKILL.md
 npx add-prompts add git@github.com:owner/repo.git
 npx add-prompts add ./local-skills
 ```

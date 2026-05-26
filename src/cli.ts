@@ -261,6 +261,7 @@ Source formats:
   owner/repo
   https://github.com/owner/repo
   https://github.com/owner/repo/tree/main/path/to/skill
+  https://github.com/owner/repo/blob/main/path/to/skill/SKILL.md
   git@github.com:owner/repo.git
   ./local-skills
 
