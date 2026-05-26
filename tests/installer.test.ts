@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { discoverSkills } from '../src/discovery.js';
-import { installCandidate, removePrompts } from '../src/installer.js';
+import { countUtf8Characters, installCandidate, removePrompts } from '../src/installer.js';
 
 let home: string | undefined;
 
@@ -24,6 +24,7 @@ describe('installCandidate', () => {
     const results = installCandidate(candidate!, ['codex', 'claude-code', 'pi'], { dryRun: false, overwrite: false });
 
     expect(results.map((result) => result.action)).toEqual(['created', 'created', 'created']);
+    expect(results[0]?.promptChars).toBe(countUtf8Characters(candidate!.prompt!));
     expect(readFileSync(join(home, '.codex/prompts/think.md'), 'utf8')).toContain('# Think');
     expect(readFileSync(join(home, '.claude/commands/think.md'), 'utf8')).toContain('# Think');
     expect(readFileSync(join(home, '.pi/agent/prompts/think.md'), 'utf8')).toContain('# Think');
@@ -38,7 +39,12 @@ describe('installCandidate', () => {
     const second = installCandidate(candidate!, ['codex'], { dryRun: false, overwrite: false });
 
     expect(second[0]?.action).toBe('skipped');
+    expect(second[0]?.promptChars).toBe(countUtf8Characters(candidate!.prompt!));
     expect(second[0]?.reason).toContain('--overwrite');
+  });
+
+  it('counts UTF-8 text characters as Unicode code points', () => {
+    expect(countUtf8Characters('a你🚀')).toBe(3);
   });
 
   it('removes installed prompt files', () => {

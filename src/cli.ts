@@ -96,10 +96,10 @@ function runAdd(args: string[]): void {
       for (const result of results) {
         if (result.action === 'skipped') {
           skipped += 1;
-          console.log(`Skipped ${label} for ${formatAgent(result.agent)}: ${result.reason}`);
+          console.log(`Skipped ${label} for ${formatAgent(result.agent)}${formatPromptLength(result.promptChars)}: ${result.reason}`);
           continue;
         }
-        console.log(`${result.action} ${label} for ${formatAgent(result.agent)}: ${shorten(result.path)}`);
+        console.log(`${result.action} ${label} for ${formatAgent(result.agent)}: ${shorten(result.path)}${formatPromptLength(result.promptChars)}`);
       }
     }
 
@@ -247,6 +247,10 @@ function printAvailable(candidates: ReturnType<typeof discoverSkills>): void {
 function shorten(path: string): string {
   const home = getHome();
   return path === home || path.startsWith(`${home}/`) ? `~${path.slice(home.length)}` : path;
+}
+
+function formatPromptLength(promptChars: number | undefined): string {
+  return typeof promptChars === 'number' ? ` (${promptChars.toLocaleString('en-US')} chars)` : '';
 }
 
 function showHelp(): void {

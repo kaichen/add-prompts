@@ -6,6 +6,7 @@ export interface InstallResult {
   agent: Agent;
   path: string;
   action: 'created' | 'overwritten' | 'would-create' | 'would-overwrite' | 'skipped';
+  promptChars?: number;
   reason?: string;
 }
 
@@ -31,22 +32,27 @@ export function installCandidate(
 
   const slug = candidate.slug;
   const prompt = candidate.prompt;
+  const promptChars = countUtf8Characters(prompt);
 
   return targetAgents.map((agent) => {
     const path = getAgentPromptPath(agent, slug);
     const exists = existsSync(path);
     if (exists && !options.overwrite) {
-      return { agent, path, action: 'skipped', reason: 'target exists; pass --overwrite to replace it' };
+      return { agent, path, action: 'skipped', promptChars, reason: 'target exists; pass --overwrite to replace it' };
     }
 
     if (options.dryRun) {
-      return { agent, path, action: exists ? 'would-overwrite' : 'would-create' };
+      return { agent, path, action: exists ? 'would-overwrite' : 'would-create', promptChars };
     }
 
     mkdirSync(getAgentPromptDir(agent), { recursive: true });
     writeFileSync(path, prompt, 'utf8');
-    return { agent, path, action: exists ? 'overwritten' : 'created' };
+    return { agent, path, action: exists ? 'overwritten' : 'created', promptChars };
   });
+}
+
+export function countUtf8Characters(value: string): number {
+  return Array.from(value).length;
 }
 
 export function removePrompts(slugs: string[], targetAgents: Agent[], dryRun: boolean): RemoveResult[] {

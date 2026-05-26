@@ -73,6 +73,12 @@ Preview writes before changing files:
 npx add-prompts add ./skills --skill think -a codex --dry-run
 ```
 
+Install output includes the generated prompt markdown length:
+
+```text
+would-create think for Codex: ~/.codex/prompts/think.md (1,234 chars)
+```
+
 Bundle a multi-file skill into one prompt:
 
 ```bash
