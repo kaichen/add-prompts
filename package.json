@@ -1,0 +1,44 @@
+{
+  "name": "add-prompts",
+  "version": "0.1.0",
+  "description": "Convert prompt-safe single-file agent skills into Codex prompts, Claude Code commands, and Pi prompt templates.",
+  "type": "module",
+  "packageManager": "npm@11.11.0",
+  "bin": {
+    "add-prompts": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "keywords": [
+    "codex",
+    "claude-code",
+    "pi",
+    "prompts",
+    "agent-skills",
+    "cli"
+  ],
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "yaml": "^2.8.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.29",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.17"
+  }
+}

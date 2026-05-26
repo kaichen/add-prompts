@@ -1,0 +1,54 @@
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { afterEach, describe, expect, it } from 'vitest';
+import { discoverSkills } from '../src/discovery.js';
+import { installCandidate, removePrompts } from '../src/installer.js';
+
+let home: string | undefined;
+
+afterEach(() => {
+  if (home) {
+    rmSync(home, { recursive: true, force: true });
+    home = undefined;
+  }
+  delete process.env.ADD_PROMPTS_HOME;
+});
+
+describe('installCandidate', () => {
+  it('writes prompt files to selected agent directories', () => {
+    home = mkdtempSync(join(tmpdir(), 'add-prompts-test-'));
+    process.env.ADD_PROMPTS_HOME = home;
+    const [candidate] = discoverSkills('tests/fixtures/single');
+
+    const results = installCandidate(candidate!, ['codex', 'claude-code', 'pi'], { dryRun: false, overwrite: false });
+
+    expect(results.map((result) => result.action)).toEqual(['created', 'created', 'created']);
+    expect(readFileSync(join(home, '.codex/prompts/think.md'), 'utf8')).toContain('# Think');
+    expect(readFileSync(join(home, '.claude/commands/think.md'), 'utf8')).toContain('# Think');
+    expect(readFileSync(join(home, '.pi/agent/prompts/think.md'), 'utf8')).toContain('# Think');
+  });
+
+  it('does not overwrite existing prompt files unless requested', () => {
+    home = mkdtempSync(join(tmpdir(), 'add-prompts-test-'));
+    process.env.ADD_PROMPTS_HOME = home;
+    const [candidate] = discoverSkills('tests/fixtures/single');
+
+    installCandidate(candidate!, ['codex'], { dryRun: false, overwrite: false });
+    const second = installCandidate(candidate!, ['codex'], { dryRun: false, overwrite: false });
+
+    expect(second[0]?.action).toBe('skipped');
+    expect(second[0]?.reason).toContain('--overwrite');
+  });
+
+  it('removes installed prompt files', () => {
+    home = mkdtempSync(join(tmpdir(), 'add-prompts-test-'));
+    process.env.ADD_PROMPTS_HOME = home;
+    const [candidate] = discoverSkills('tests/fixtures/single');
+
+    installCandidate(candidate!, ['pi'], { dryRun: false, overwrite: false });
+    const results = removePrompts(['think'], ['pi'], false);
+
+    expect(results[0]?.action).toBe('removed');
+  });
+});
