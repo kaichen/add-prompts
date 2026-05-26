@@ -1,9 +1,17 @@
 {
   "name": "add-prompts",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Convert prompt-safe single-file agent skills into Codex prompts, Claude Code commands, and Pi prompt templates.",
   "type": "module",
   "packageManager": "npm@11.11.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kaichen/add-prompts.git"
+  },
+  "homepage": "https://github.com/kaichen/add-prompts#readme",
+  "bugs": {
+    "url": "https://github.com/kaichen/add-prompts/issues"
+  },
   "bin": {
     "add-prompts": "dist/cli.js"
   },
