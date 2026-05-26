@@ -19,6 +19,13 @@ export interface SkillCandidate {
   prompt?: string;
   safe: boolean;
   reason?: string;
+  bundledFiles?: BundledFile[];
+}
+
+export interface BundledFile {
+  path: string;
+  kind: 'markdown' | 'script' | 'text';
+  content: string;
 }
 
 export interface AddOptions {
@@ -30,6 +37,7 @@ export interface AddOptions {
   dryRun: boolean;
   overwrite: boolean;
   fullDepth: boolean;
+  bundleExtras: boolean;
   global: boolean;
 }
 

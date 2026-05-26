@@ -34,6 +34,7 @@ npx add-prompts add ./local-skills
 | `--dry-run` | Show writes without changing files. |
 | `--overwrite` | Replace existing prompt files. |
 | `--full-depth` | Search nested skills even when the source root has `SKILL.md`. |
+| `--bundle-extras` | Bundle non-`SKILL.md` files into the generated prompt as XML-wrapped markdown/scripts/text. |
 
 ## Output paths
 
@@ -72,6 +73,12 @@ Preview writes before changing files:
 npx add-prompts add ./skills --skill think -a codex --dry-run
 ```
 
+Bundle a multi-file skill into one prompt:
+
+```bash
+npx add-prompts add ./skills --skill think -a codex --bundle-extras
+```
+
 Remove an installed prompt:
 
 ```bash
@@ -96,3 +103,5 @@ think/
 ```
 
 The rejected form should remain a skill. `add-prompts` converts explicit workflows into prompt templates; it does not emulate skill loading.
+
+Pass `--bundle-extras` only when you intentionally want those extra files embedded into the generated prompt. Extra markdown files are wrapped in `<markdown>` tags, scripts in `<script>` tags, and other text files in `<file>` tags inside a `<skill_bundle>` block.

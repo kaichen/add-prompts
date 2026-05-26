@@ -51,4 +51,17 @@ describe('installCandidate', () => {
 
     expect(results[0]?.action).toBe('removed');
   });
+
+  it('installs bundled extra files into the generated prompt', () => {
+    home = mkdtempSync(join(tmpdir(), 'add-prompts-test-'));
+    process.env.ADD_PROMPTS_HOME = home;
+    const [candidate] = discoverSkills('tests/fixtures/bundled', false, true);
+
+    installCandidate(candidate!, ['codex'], { dryRun: false, overwrite: false });
+
+    const prompt = readFileSync(join(home, '.codex/prompts/bundle-me.md'), 'utf8');
+    expect(prompt).toContain('<skill_bundle>');
+    expect(prompt).toContain('Use this markdown context.');
+    expect(prompt).toContain('hello from bundled script');
+  });
 });

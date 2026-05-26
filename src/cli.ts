@@ -61,7 +61,7 @@ function runAdd(args: string[]): void {
 
   const resolved = resolveSource(source);
   try {
-    const candidates = discoverSkills(resolved.path, options.fullDepth);
+    const candidates = discoverSkills(resolved.path, options.fullDepth, options.bundleExtras);
     if (candidates.length === 0) {
       throw new Error(`no SKILL.md files found in ${resolved.label}`);
     }
@@ -176,6 +176,7 @@ function parseAddArgs(args: string[]): { source: string | undefined; options: Ad
       dryRun: args.includes('--dry-run'),
       overwrite: args.includes('--overwrite'),
       fullDepth: args.includes('--full-depth'),
+      bundleExtras: args.includes('--bundle-extras'),
       global: true,
     },
   };
@@ -275,6 +276,7 @@ Options:
   --dry-run                 Show writes without changing files
   --overwrite               Replace existing prompt files
   --full-depth              Search nested skills even when root has SKILL.md
+  --bundle-extras           Bundle non-SKILL.md files into the generated prompt as XML
   -h, --help                Show help
   -v, --version             Show version`);
 }

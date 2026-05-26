@@ -1,6 +1,6 @@
 {
   "name": "add-prompts",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Convert prompt-safe single-file agent skills into Codex prompts, Claude Code commands, and Pi prompt templates.",
   "type": "module",
   "packageManager": "npm@11.11.0",
