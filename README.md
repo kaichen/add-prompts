@@ -2,7 +2,24 @@
 
 Convert prompt-safe single-file agent skills into native prompt entries for Codex, Claude Code, and Pi.
 
+> [!IMPORTANT]
+> ## Why this exists
+>
+> Skills are powerful, but a large skills folder can put too much into the agent's always-visible tool/behavior surface. Many workflows do not need automatic skill discovery at all: they only need to be called explicitly when you decide they are relevant.
+>
+> `add-prompts` moves those manual-call workflows into prompt/command slots. The agent does not need to carry every skill in its active skill view; you can still load the workflow on demand with a slash command or custom prompt.
+
 `add-prompts` is intentionally strict: it only converts a skill directory when that directory contains `SKILL.md` and no other meaningful files. If a skill depends on `references/`, `scripts/`, `assets/`, or any other sibling file, the CLI refuses to convert it because the result would lose behavior.
+
+## Coding agent targets
+
+`add-prompts` writes to the native explicit-invocation prompt/command systems for each supported coding agent:
+
+| Agent | Output type | Docs |
+| --- | --- | --- |
+| Codex | Custom prompts | [Codex custom prompts](https://developers.openai.com/codex/custom-prompts) |
+| Claude Code | Slash commands | [Claude Code slash commands](https://code.claude.com/docs/en/agent-sdk/slash-commands) |
+| Pi | Prompt templates | [Pi prompt templates](https://pi.dev/docs/latest/prompt-templates) |
 
 ## Install from a source
 
